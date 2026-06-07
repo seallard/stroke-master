@@ -1,0 +1,36 @@
+# Run on every commit. Install once with: pre-commit install
+# Update pinned revs with: pre-commit autoupdate
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+
+  # Python: lint (autofix) + format
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.16
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  # Frontend: Prettier (pre-commit provisions its own Node, so host Node version is irrelevant)
+  - repo: https://github.com/rbubley/mirrors-prettier
+    rev: v3.8.3
+    hooks:
+      - id: prettier
+        files: ^frontend/
+
+  # Backend tests
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest (backend)
+        entry: bash -c 'cd backend && uv run pytest -q'
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
